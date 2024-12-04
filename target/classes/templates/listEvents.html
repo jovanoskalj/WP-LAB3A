@@ -2,13 +2,107 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Event Booking page - Welcome and choose an Event</title>
+  <title>Event Booking Page - Welcome and Choose an Event</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <style type="text/css">
     body {
-      width: 800px;
-      margin: auto;
+      background-color: #f8f9fa;
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    header {
+      text-align: center;
+      background-color: #343a40;
+      color: white;
+      padding: 20px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+
+    h1, h2 {
+      color: #17a2b8;
+    }
+
+    main {
+      background-color: white;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    form {
+      margin-bottom: 20px;
+    }
+
+    form label {
+      font-weight: bold;
+      color: #343a40;
+    }
+
+    input[type="text"], input[type="number"], select {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ced4da;
+      border-radius: 5px;
+    }
+
+    input[type="submit"], button {
+      background-color: #17a2b8;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    input[type="submit"]:hover, button:hover {
+      background-color: #138496;
+    }
+
+    .btn {
+      margin-top: 10px;
+    }
+
+    .btn-info {
+      background-color: #007bff;
+      border-color: #007bff;
+    }
+
+    .btn-info:hover {
+      background-color: #0056b3;
+      border-color: #004085;
+    }
+
+    .btn-dark {
+      background-color: #343a40;
+      border-color: #343a40;
+    }
+
+    .btn-dark:hover {
+      background-color: #23272b;
+    }
+
+    .event-label {
+      display: block;
+      padding: 10px;
+      background-color: #e9ecef;
+      margin-bottom: 10px;
+      border-radius: 5px;
+    }
+
+    .event-label:hover {
+      background-color: #ced4da;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    a i {
+      margin-right: 5px;
     }
   </style>
 </head>
@@ -21,10 +115,8 @@
   <form th:method="GET" th:action="@{/events/events-list}">
     <label for="search">By Event Name:</label>
     <input type="text" name="searchName" id="search" placeholder="Search an event">
-    <br/>
-    <label for="minRating">By Minimum Event Rating (0.00 - 10.00): </label>
+    <label for="minRating">By Minimum Event Rating (0.00 - 10.00):</label>
     <input type="number" name="minRating" id="minRating" min="0" max="10" placeholder="Min Rating">
-    <br/>
     <input type="submit" value="Submit">
   </form>
 
@@ -33,8 +125,7 @@
     <select name="locationId" class="form-control">
       <option th:each="location : ${locations}"
               th:value="${location.id}"
-              th:text="${location.name}">
-      </option>
+              th:text="${location.name}"></option>
     </select>
     <button type="submit">Filter</button>
   </form>
@@ -42,37 +133,29 @@
   <form id="mainForm" th:method="POST" th:action="@{/servlet/events/event-booking}">
     <h2>Choose an event:</h2>
     <div th:if="${events != null}">
-      <div th:each="event : ${events}">
-        <input type="radio" th:id="${event.getId()}" name="rad" th:value="${event.name}" />
+      <div th:each="event : ${events}" class="event-label">
+        <input type="radio" th:id="${event.getId()}" name="rad" th:value="${event.name}">
         <label th:for="${event.getId()}">
-          Name: <th:block th:text="${event.getName()}"></th:block>,
-          Description: <th:block th:text="${event.getDescription()}"></th:block>,
-          Rating: <th:block th:text="${event.getPopularityScore()}"></th:block>
-          Location: <th:block th:if="${event.location != null}" th:text="${event.location.name}"></th:block>
+          <strong>Name:</strong> <th:block th:text="${event.getName()}"></th:block>,
+          <strong>Description:</strong> <th:block th:text="${event.getDescription()}"></th:block>,
+          <strong>Rating:</strong> <th:block th:text="${event.getPopularityScore()}"></th:block>,
+          <strong>Location:</strong> <th:block th:if="${event.location != null}" th:text="${event.location.name}"></th:block>
         </label>
-        <br>
-        <a th:href="@{'/events/events-list/edit-form/{id}' (id=${event.getId()})}" class="btn btn-sm btn-info edit-event ml-2">
-          <i class="fa fa-edit">Edit</i>
+        <a th:href="@{'/events/events-list/edit-form/{id}' (id=${event.getId()})}" class="btn btn-sm btn-info">
+          <i class="fa fa-edit"></i>Edit
         </a>
-        <a th:href="@{'/events/events-list/event-details/{id}' (id=${event.getId()})}" class="btn btn-sm btn-info edit-event">
-          <i class="fa fa-edit">Details</i>
+        <a th:href="@{'/events/events-list/event-details/{id}' (id=${event.getId()})}" class="btn btn-sm btn-info">
+          <i class="fa fa-info-circle"></i>Details
         </a>
-        <br/>
-        <br/>
       </div>
     </div>
     <div th:if="${events == null}">
       <p>No events available.</p>
     </div>
 
-    <a href="/events/events-list/add-form" class="btn btn-block btn-dark add-product-btn">
-      Add new event
-    </a>
-    <br>
-    <br>
+    <a href="/events/events-list/add-form" class="btn btn-block btn-dark">Add new event</a>
     <h2>Choose number of tickets:</h2>
-    <input type="number" name="numTickets" min="1" max="10"><br/>
-    <br/>
+    <input type="number" name="numTickets" min="1" max="10">
     <input type="submit" value="Submit">
   </form>
 </main>
